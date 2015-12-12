@@ -4,12 +4,13 @@ object TravelSpecBuilder {
 
 
   def buildSpecs(preference: TravelPreference): Stream[TravelSpec] = {
-
-    Stream.cons(
-    preference.earliestStart.
-
-    for (dep <- preference.start;
-         ret <-preference.`return`) yield TravelSpec()
+    val (minDuration, _) = preference.tripDuration
+    if (preference.earliestStart.plusYears(minDuration.getYears).plusMonths(minDuration.getMonths).plusDays(minDuration.getDays)
+      .isAfter(preference.latestStart)) {
+      Stream.empty
+    } else {
+      val headSpec: TravelSpec = ???
+      Stream.cons(headSpec, buildSpecs(preference))
+    }
   }
-
 }
