@@ -5,12 +5,20 @@ object TravelSpecBuilder {
 
   def buildSpecs(preference: TravelPreference): Stream[TravelSpec] = {
     val (minDuration, _) = preference.tripDuration
-    if (preference.earliestStart.plusYears(minDuration.getYears).plusMonths(minDuration.getMonths).plusDays(minDuration.getDays)
-      .isAfter(preference.latestStart)) {
+    if (preference.earliest.plusPeriod(minDuration).isAfter(preference.latest)) {
       Stream.empty
     } else {
-      val headSpec: TravelSpec = ???
-      Stream.cons(headSpec, buildSpecs(preference))
+      (preference.earliest to preference.latest).toDayParts(preference.start).flatMap { case(tripStartDate, tripStartPOD) =>
+
+        val (shortestDuration, longestDuration) = preference.tripDuration
+
+        (tripStartDate.plusPeriod(shortestDuration) to tripStartDate.plusPeriod(longestDuration)).toDayParts(preference.`return`)
+          .filterNot { case (tripEndDate, _) => tripEndDate.isAfter(preference.latest)}
+          .map (TravelSpec((tripStartDate, tripStartPOD), _ ))
+      }
     }
   }
+
+
+
 }

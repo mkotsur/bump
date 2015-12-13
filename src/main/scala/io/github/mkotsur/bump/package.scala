@@ -12,8 +12,8 @@ package object bump {
 
   type DurationPref = (Period, Period)
 
-  case class TravelPreference(earliestStart: LocalDate,
-                              latestStart: LocalDate,
+  case class TravelPreference(earliest: LocalDate,
+                              latest: LocalDate,
                               start: Seq[DepartPref],
                               `return`: Seq[DepartPref],
                               tripDuration: DurationPref)
@@ -37,6 +37,8 @@ package object bump {
 
   object Morning extends DayPart {
 
+    override def toString: String = "MORNING"
+
     def from: LocalTime = LocalTime.MIN
 
     def till: LocalTime = LocalTime.NOON
@@ -44,10 +46,41 @@ package object bump {
 
   object Afternoon extends DayPart {
 
+    override def toString: String = "AFTERNOON"
+
     def from: LocalTime = LocalTime.NOON
 
     def till: LocalTime = LocalTime.MAX
   }
 
+  implicit class LocalDateWithAddition(date: LocalDate) {
+    def plusPeriod(duration: Period): LocalDate = {
+      date.plusYears(duration.getYears).plusMonths(duration.getMonths).plusDays(duration.getDays)
+    }
+  }
+
+  implicit class LocalDateWithRange(start: LocalDate) {
+
+    def `to`(end: LocalDate):Stream[LocalDate] = {
+      if (start.isAfter(end)) {
+        Stream.empty
+      } else {
+        Stream.cons(start, start.plusDays(1) to end)}
+    }
+
+  }
+
+
+  implicit class StreamOfDatesExtended(stream: Stream[LocalDate]) {
+    def toDayParts(preference: Seq[(DayOfWeek, DayPart)]): Stream[TravelEventTimeSpec] = streamRangeOfDateParts filter { case (date, partOfDay) =>
+      preference.contains((date.getDayOfWeek, partOfDay))
+    }
+
+    private def streamRangeOfDateParts: Stream[TravelEventTimeSpec] = {
+      stream.flatMap { case date =>
+        Seq((date, Morning), (date, Afternoon))
+      }
+    }
+  }
 
 }
