@@ -12,6 +12,10 @@ package object bump {
 
   type DurationPref = (Period, Period)
 
+  case class DestinationPreference(originAirportCode: String,
+                                   destinationAirportCode: String,
+                                   includeNearbyAirports: Boolean = false)
+
   case class TravelPreference(earliest: LocalDate,
                               latest: LocalDate,
                               start: Seq[DepartPref],
