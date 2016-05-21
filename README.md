@@ -19,3 +19,11 @@ and return on
 
   TravelSpec -> PYTHON/WEBDRIVER -> BestPrice
 ```  
+
+## Setup
+
+```
+$ brew install jython chromedriver
+$ jython -m ensurepip
+$ /usr/local/Cellar/jython/2.7.0/libexec/bin/pip install selenium
+```
