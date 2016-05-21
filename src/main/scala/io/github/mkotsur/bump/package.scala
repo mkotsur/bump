@@ -74,10 +74,12 @@ package object bump {
 
   }
 
-
   implicit class StreamOfDatesExtended(stream: Stream[LocalDate]) {
-    def toDayParts(preference: Seq[(DayOfWeek, DayPart)]): Stream[TravelEventTimeSpec] = streamRangeOfDateParts filter { case (date, partOfDay) =>
-      preference.contains((date.getDayOfWeek, partOfDay))
+    def toDayParts(preference: Seq[(DayOfWeek, DayPart)]): Stream[TravelEventTimeSpec] = streamRangeOfDateParts filter {
+      case (date, partOfDay) => preference.flatMap {
+          case (d, `WholeDay`) => Seq((d, Morning), (d, Afternoon))
+          case p => Seq(p)
+        } contains((date.getDayOfWeek, partOfDay))
     }
 
     private def streamRangeOfDateParts: Stream[TravelEventTimeSpec] = {

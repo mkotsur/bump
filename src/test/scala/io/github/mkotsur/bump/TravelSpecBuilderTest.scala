@@ -43,6 +43,29 @@ class TravelSpecBuilderTest extends Spec with Matchers {
       specs.size shouldBe 4
     }
 
+    def `should generate specs for a whole day`() = {
+
+      val today = LocalDate.of(2016, 5, 21) // Saturday
+      val tomorrow = LocalDate.of(2016, 5, 22) // Sunday
+      val travelPref = TravelPreference(
+          today,
+          tomorrow,
+          Seq((DayOfWeek.SATURDAY, WholeDay)),
+          Seq((DayOfWeek.SUNDAY, WholeDay)),
+        (Period.ofDays(1), Period.ofDays(1))
+      )
+
+      val specs = TravelSpecBuilder.buildSpecs(travelPref).toList
+
+
+      specs should contain(TravelSpec((today, Morning), (tomorrow, Morning)))
+      specs should contain(TravelSpec((today, Morning), (tomorrow, Afternoon)))
+      specs should contain(TravelSpec((today, Afternoon), (tomorrow, Morning)))
+      specs should contain(TravelSpec((today, Afternoon), (tomorrow, Afternoon)))
+
+      specs.size shouldBe 4
+    }
+
   }
 
 }
