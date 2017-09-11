@@ -31,9 +31,7 @@ object JythonRunner extends App {
     (Period.ofDays(2), Period.ofDays(4))
   )
 
-  val executorService = Executors.newFixedThreadPool(10)
-  implicit val executionContext = ExecutionContext.fromExecutorService(executorService)
-
+  import AppConfig.implicits.scriptExecutionContext
 
   val responseFutures = TravelSpecBuilder.buildSpecs(travelPref).map { ts =>
     Future {

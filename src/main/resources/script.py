@@ -2,7 +2,7 @@ from selenium import webdriver
 from java.time.format import DateTimeFormatter
 import momondo
 
-driver = webdriver.PhantomJS()
+driver = webdriver.Chrome()
 pricewalker = momondo.PriceWalker(driver)
 
 date_formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy")
